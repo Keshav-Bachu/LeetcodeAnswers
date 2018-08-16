@@ -1,0 +1,55 @@
+class Solution {
+public:
+    int romanToInt(string s) {   
+        int sum = 0;
+        int startPos = s.size() - 1;
+        sum += letterReader(s[startPos]);
+        //cout  << sum << '\n';
+        
+        
+        
+        for(startPos = startPos - 1; startPos >= 0; startPos--)
+        {
+            int pastLetter = letterReader(s[startPos + 1]);
+            int currentLetter = letterReader(s[startPos]);
+                
+            if(currentLetter < pastLetter)
+            {
+                sum -= currentLetter;
+                
+            }
+            else
+            {
+                sum += currentLetter;
+            }
+            
+            //cout << pastLetter << '\n';
+            
+        }
+        
+        return sum;
+        
+    }
+    
+    int letterReader(char letter)
+    {
+        if(letter == 'I')
+            return 1;
+        if(letter == 'V')
+            return 5;
+        if(letter == 'X')
+            return 10;
+        if(letter == 'L')
+            return 50;
+        if(letter == 'C')
+            return 100;
+        if(letter == 'D')
+            return 500;
+        if(letter == 'M')
+            return 1000;
+        
+        
+        
+        return 0;
+    }
+};
