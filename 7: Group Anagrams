@@ -1,0 +1,116 @@
+#include vector
+#include iostream
+#include algorithm
+using namespace std;
+class Solution {
+public:
+    int UniqueNum = 1;
+    int extraVal = -1;
+    struct HashMap {
+        
+        //represent each of the 26 letters
+        vector <int> letterIndicate;
+        
+        //Next another hashmap for each letter
+        //bool nextInitialized = false;
+        vector <HashMap> next;
+    };
+    
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        vector<vector<string>> AnagramStore;
+        vector<string> Empty;
+        
+        HashMap dictionary;
+        dictionary.letterIndicate = vector<int> (26, 0);
+        
+        for(int i = 0; i < strs.size(); i++)
+        {
+            string hold = strs[i];
+            if(hold == "")
+            {
+                if(extraVal == -1){
+                    AnagramStore.push_back(Empty);
+                    AnagramStore[AnagramStore.size() - 1].push_back(hold);
+                    extraVal = AnagramStore.size() - 1;
+                }
+                else
+                {
+                    AnagramStore[extraVal].push_back(hold);
+                }
+                continue;
+            }
+            sort(hold.begin(), hold.end());
+            
+            int wordAdd  = LocateWord(dictionary, hold, 0);
+            if(wordAdd != -1)
+            {
+                AnagramStore[wordAdd - 1].push_back(strs[i]);
+            }
+            else
+            {
+                //cout << hold << endl;
+                AnagramStore.push_back(Empty);
+                AnagramStore[AnagramStore.size() - 1].push_back(strs[i]);
+                StoreWord(dictionary, hold, 0);
+                UniqueNum++;
+            }
+        }
+        
+        return AnagramStore;
+    }
+    
+    int LocateWord(HashMap & wordToken, string & Word, int position)
+    {
+        if(wordToken.letterIndicate.size() == 0)
+        {
+            return -1;
+        }
+        int mapPosition = Word[position] - 'a';
+        //Found word condition
+        if(Word.size() == position + 1 && wordToken.letterIndicate[mapPosition] != 0)
+        {
+            return wordToken.letterIndicate[mapPosition];
+        }
+        
+        //Dig deeper to find the word
+        else if(Word.size() > position + 1 && wordToken.next.size() != 0)
+        {
+            return LocateWord(wordToken.next[mapPosition], Word, position + 1);
+        }
+        
+        //Word not found
+        else
+        {
+            return -1;
+        }
+    }
+    
+    void StoreWord(HashMap & Map, string & Word, int position)
+    {
+        //cout << position << ' ' <<  Word.size() << endl;
+        int mapPosition = Word[position] - 'a';
+        
+        if(Map.letterIndicate.size() == 0)
+        {
+            Map.letterIndicate = vector <int> (26, 0);
+        }
+        
+        //end of word reached
+        if(Word.size() == position + 1)
+        {
+            Map.letterIndicate[mapPosition] = UniqueNum;
+            return;
+        }
+        
+        //dig deeper
+        else
+        {
+            if(Map.next.size() == 0)
+            {
+                Map.next = vector <HashMap> (26);
+            }
+            
+            return StoreWord(Map.next[mapPosition], Word, position + 1);
+        }
+    }
+};
